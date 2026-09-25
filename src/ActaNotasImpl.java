@@ -13,14 +13,18 @@ import es.upm.aedlib.indexedlist.IndexedList;
 public class ActaNotasImpl implements ActaNotas{
 
     private IndexedList<Calificacion> calificaciones;
+    private String asignatura;
+    private double notaMinimaAprobado;
+    private int anyo;
+    private boolean esConvocatoriaExtraordinaria;
 
     public ActaNotasImpl(String asignatura, double notaMinimaAprobado,
                         int anyo, boolean esConvocatoriaExtraordinaria){
-        calificaciones = new IndexedList<Calificacion>();
-        asignatura = calificaciones.asignatura();
-        notaMinimaAprobado = calificaciones.minNotaAprobado();
-        anyo = calificaciones.anyo();
-        esConvocatoriaExtraordinaria = calificaciones.esConvocatoriaExtraordinaria();
+        this.calificaciones = new IndexedList<Calificacion>();
+        this.asignatura = asignatura;
+        this.notaMinimaAprobado = notaMinimaAprobado;
+        this.anyo = anyo;
+        this.esConvocatoriaExtraordinaria = esConvocatoriaExtraordinaria;
     }
 
     public ActaNotas addCalificacion(String nombre, String matricula, String grupo, double nota){
@@ -32,7 +36,7 @@ public class ActaNotasImpl implements ActaNotas{
     }
 
     public ActaNotas updateCalificacion(Calificacion calificacion){
-        
+        //hacer
     }
 
     public ActaNotas deleteCalificacion(String matricula){
@@ -40,11 +44,18 @@ public class ActaNotasImpl implements ActaNotas{
     }
 
     public double notaMedia(){
-        //hacer
+        int nota = 0;
+        int i;
+        for (i = 0; i < calificaciones.size(); i++){
+            nota += calificaciones.get(i).nota(); 
+        }
+        return nota/i;
     }
 
     public boolean equals(Object obj){
-        //hacer
+        for (int i = 0; i < calificaciones.size(); i++){
+            
+        }
     }
 
     public String toString(){
@@ -58,6 +69,6 @@ public class ActaNotasImpl implements ActaNotas{
     public IndexedList<Calificacion>
     getCalificaciones(Function<Calificacion,Boolean> filter,
                       Comparator<Calificacion> cmp){
-    //hacer    
+        //hacer    
     }
 }
