@@ -27,30 +27,67 @@ public class ActaNotasImpl implements ActaNotas{
         this.esConvocatoriaExtraordinaria = esConvocatoriaExtraordinaria;
     }
 
-    public ActaNotas addCalificacion(String nombre, String matricula, String grupo, double nota){
-        calificaciones.add(calificaciones.size(), new Calificacion(nombre, matricula, grupo, nota));
-    }
+    private void comprobarNull(Object objeto) {
+	    if (objeto == null) {
+	        throw new IllegalArgumentException();
+	    }
+	}
+	
+	@Override
+	public ActaNotas addCalificacion(String nombre, String matricula, String grupo, double nota) {	
+		if(getCalificacion(matricula) != null) {
+			throw new IllegalStateException();
+		}
+		
+		calificaciones.add(calificaciones.size(),new Calificacion(nombre, matricula, grupo, nota));
+		return this;
+	}
 
-    public Calificacion getCalificacion(String matricula){
-        return calificaciones.get(calificacion.indexOf(matricula)).getCalificacion();
-    }
+	@Override
+	public Calificacion getCalificacion(String matricula) {
+		comprobarNull(matricula);
+		int a;
+		for(a=0;a<calificaciones.size()&&!(calificaciones.get(a).matricula().equals(matricula));a++);
+		if(a<calificaciones.size()) {
+			return calificaciones.get(a);
+		}
+		return null;
+	}
 
-    public ActaNotas updateCalificacion(Calificacion calificacion){
-        //hacer
-    }
+	@Override
+	public ActaNotas updateCalificacion(Calificacion calificacion) {
+		comprobarNull(calificacion);
+		int a;
+		 for (a = 0;a < calificaciones.size() && !calificaciones.get(a).matricula().equals(calificacion.matricula());a++);
+		    if (a == calificaciones.size()) {
+		        throw new IllegalStateException();
+		    }
+		    calificaciones.set(a, calificacion);
+		    return this;
+	}
 
-    public ActaNotas deleteCalificacion(String matricula){
-        //hacer
-    }
+	@Override
+	public ActaNotas deleteCalificacion(String matricula) {
+		Calificacion aBorrar=getCalificacion(matricula);
+		if(aBorrar==null) {
+			throw new IllegalStateException() ;
+		}
+		calificaciones.remove(aBorrar);
+		return this;
+	}
 
-    public double notaMedia(){
-        int nota = 0;
-        int i;
-        for (i = 0; i < calificaciones.size(); i++){
-            nota += calificaciones.get(i).nota(); 
-        }
-        return nota/i;
-    }
+	@Override
+	public double notaMedia() {
+	    if (calificaciones.size()==0) {
+	        throw new IllegalStateException();
+	    }
+	    double suma=0;
+	    for (int i=0;i<calificaciones.size();i++) {
+	        suma+=calificaciones.get(i).nota();
+	    }
+
+	    return suma/calificaciones.size();
+	}
 
     public boolean equals(Object obj){
         for (int i = 0; i < calificaciones.size(); i++){
@@ -60,6 +97,7 @@ public class ActaNotasImpl implements ActaNotas{
 
     public String toString(){
         //hacer
+        return null;//dumy
     }
 
     public IndexedList<Pair<String, Integer>> alumnosPorGrupo(){
