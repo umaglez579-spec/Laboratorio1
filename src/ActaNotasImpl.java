@@ -129,9 +129,24 @@ public class ActaNotasImpl implements ActaNotas{
 	    return devolver;
 		}
 
-    public IndexedList<Pair<String, Integer>> alumnosPorGrupo(){
-        //hacer
-    }
+    @Override
+	public IndexedList<Pair<String, Integer>> alumnosPorGrupo() {
+		IndexedList<Pair<String, Integer>> pares=new ArrayIndexedList<Pair<String,Integer>>();
+		Pair<String,Integer> par;
+		String grupo;
+		int j;
+		for(int i=0;i<calificaciones.size();i++) {
+			grupo=calificaciones.get(i).grupo;
+			for(j=0;j<pares.size()&&(!(pares.get(j).left().equals(grupo)));j++);
+			if (j<pares.size()){
+				par=pares.get(j);
+				pares.set(j, new Pair<String,Integer>(par.left(),par.right()+1));		
+			}else {
+				pares.add(pares.size(), new Pair<String,Integer>(grupo,1));
+			}
+		}
+		return pares;
+	}
 
     public IndexedList<Calificacion>
     getCalificaciones(Function<Calificacion,Boolean> filter,
