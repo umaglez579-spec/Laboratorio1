@@ -1,31 +1,25 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.function.Function;
+package aed.actanotas;
 
-import aed.actanotas.ActaNotas;
-import aed.actanotas.Calificacion;
-import java.util.function.Function;
 import java.util.Comparator;
+import java.util.function.Function;
 import es.upm.aedlib.Pair;
-import es.upm.aedlib.indexedlist.IndexedList;
-
+import es.upm.aedlib.indexedlist.*;
+import aed.actanotas.*;
 
 public class ActaNotasImpl implements ActaNotas{
+	private String asignatura;
+	private double notaMin;
+	private int año;
+	private boolean julio;
+	private IndexedList<Calificacion> calificaciones;
 
-    private IndexedList<Calificacion> calificaciones;
-    private String asignatura;
-    private double notaMinimaAprobado;
-    private int anyo;
-    private boolean esConvocatoriaExtraordinaria;
-
-    public ActaNotasImpl(String asignatura, double notaMinimaAprobado,
-                        int anyo, boolean esConvocatoriaExtraordinaria){
-        this.calificaciones = new IndexedList<Calificacion>();
-        this.asignatura = asignatura;
-        this.notaMinimaAprobado = notaMinimaAprobado;
-        this.anyo = anyo;
-        this.esConvocatoriaExtraordinaria = esConvocatoriaExtraordinaria;
-    }
+	public ActaNotasImpl(String asignatura, double notaMin, int año, boolean julio) {
+		this.asignatura=asignatura;
+		this.notaMin=notaMin;
+		this.año=año;
+		this.julio=julio;
+		this.calificaciones= new ArrayIndexedList<Calificacion>();
+	}
 
 	@Override
 	public String asignatura() {
@@ -47,18 +41,18 @@ public class ActaNotasImpl implements ActaNotas{
 		return this.notaMin;
 	}
 
-    private void comprobarNull(Object objeto) {
-	    if (objeto == null) {
-	        throw new IllegalArgumentException();
-	    }
+	private void comprobarNull(Object objeto) {
+		if (objeto == null) {
+			throw new IllegalArgumentException();
+		}
 	}
-	
+
 	@Override
 	public ActaNotas addCalificacion(String nombre, String matricula, String grupo, double nota) {	
 		if(getCalificacion(matricula) != null) {
 			throw new IllegalStateException();
 		}
-		
+
 		calificaciones.add(calificaciones.size(),new Calificacion(nombre, matricula, grupo, nota));
 		return this;
 	}
@@ -78,12 +72,12 @@ public class ActaNotasImpl implements ActaNotas{
 	public ActaNotas updateCalificacion(Calificacion calificacion) {
 		comprobarNull(calificacion);
 		int a;
-		 for (a = 0;a < calificaciones.size() && !calificaciones.get(a).matricula().equals(calificacion.matricula());a++);
-		    if (a == calificaciones.size()) {
-		        throw new IllegalStateException();
-		    }
-		    calificaciones.set(a, calificacion);
-		    return this;
+		for (a = 0;a < calificaciones.size() && !calificaciones.get(a).matricula().equals(calificacion.matricula());a++);
+		if (a == calificaciones.size()) {
+			throw new IllegalStateException();
+		}
+		calificaciones.set(a, calificacion);
+		return this;
 	}
 
 	@Override
@@ -98,26 +92,26 @@ public class ActaNotasImpl implements ActaNotas{
 
 	@Override
 	public double notaMedia() {
-	    if (calificaciones.size()==0) {
-	        throw new IllegalStateException();
-	    }
-	    double suma=0;
-	    for (int i=0;i<calificaciones.size();i++) {
-	        suma+=calificaciones.get(i).nota();
-	    }
+		if (calificaciones.size()==0) {
+			throw new IllegalStateException();
+		}
+		double suma=0;
+		for (int i=0;i<calificaciones.size();i++) {
+			suma+=calificaciones.get(i).nota();
+		}
 
-	    return suma/calificaciones.size();
+		return suma/calificaciones.size();
 	}
 
-    @Override
+	@Override
 	public boolean equals(Object obj) {
-	    if (!(obj.getClass()==this.getClass())) {
-	        return false;
-	    }
-	    ActaNotasImpl otra=(ActaNotasImpl) obj;
-	    return (this.asignatura.equals(otra.asignatura) &&this.año==otra.año && this.julio==otra.julio);
+		if (!(obj.getClass()==this.getClass())) {
+			return false;
+		}
+		ActaNotasImpl otra=(ActaNotasImpl) obj;
+		return (this.asignatura.equals(otra.asignatura) &&this.año==otra.año && this.julio==otra.julio);
 	}
-	
+
 	@Override
 	public String toString() {
 		String devolver="ActaNotas(" + "asignatura=" + this.asignatura + ", año=" + this.año + ", convocatoria=";
@@ -126,10 +120,10 @@ public class ActaNotasImpl implements ActaNotas{
 		}else {
 			devolver+= "ordinaria)";
 		}
-	    return devolver;
-		}
+		return devolver;
+	}
 
-    @Override
+	@Override
 	public IndexedList<Pair<String, Integer>> alumnosPorGrupo() {
 		IndexedList<Pair<String, Integer>> pares=new ArrayIndexedList<Pair<String,Integer>>();
 		Pair<String,Integer> par;
@@ -148,9 +142,38 @@ public class ActaNotasImpl implements ActaNotas{
 		return pares;
 	}
 
-    public IndexedList<Calificacion>
-    getCalificaciones(Function<Calificacion,Boolean> filter,
-                      Comparator<Calificacion> cmp){
-        //hacer    
-    }
+	private Comparator<Calificacion> compararMatricula(){
+		return (c1,c2)->c1.matricula().compareTo(c2.matricula());
+	}
+
+
+	@Override
+	public IndexedList<Calificacion> getCalificaciones(Function<Calificacion, Boolean> filter,
+			Comparator<Calificacion> cmp) {
+		IndexedList<Calificacion> ordenado=new ArrayIndexedList<Calificacion>();
+		Calificacion compruebo;
+		Calificacion aux;
+		for (int i=0;i<calificaciones.size();i++) {
+
+			compruebo=calificaciones.get(i);
+
+			if (filter==null||filter.apply(compruebo)) {
+				ordenado.add(ordenado.size(),compruebo);
+			}
+		}
+		if(cmp==null) {
+			cmp=compararMatricula();
+		}
+		for (int i=0;i< ordenado.size()-1;i++) {
+			for (int j=i+1; j<ordenado.size(); j++) {
+				if (cmp.compare(ordenado.get(i), ordenado.get(j)) > 0) {
+					aux = ordenado.get(i);
+					ordenado.set(i, ordenado.get(j));
+					ordenado.set(j, aux);
+				}
+			}
+		}
+		return ordenado;
+	}
+
 }
