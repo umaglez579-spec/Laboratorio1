@@ -27,6 +27,26 @@ public class ActaNotasImpl implements ActaNotas{
         this.esConvocatoriaExtraordinaria = esConvocatoriaExtraordinaria;
     }
 
+	@Override
+	public String asignatura() {
+		return this.asignatura;
+	}
+
+	@Override
+	public int anyo() {
+		return this.año ;
+	}
+
+	@Override
+	public boolean esConvocatoriaExtraordinaria() {
+		return this.julio;
+	}
+
+	@Override
+	public double minNotaAprobado() {
+		return this.notaMin;
+	}
+
     private void comprobarNull(Object objeto) {
 	    if (objeto == null) {
 	        throw new IllegalArgumentException();
@@ -89,16 +109,25 @@ public class ActaNotasImpl implements ActaNotas{
 	    return suma/calificaciones.size();
 	}
 
-    public boolean equals(Object obj){
-        for (int i = 0; i < calificaciones.size(); i++){
-            
-        }
-    }
-
-    public String toString(){
-        //hacer
-        return null;//dumy
-    }
+    @Override
+	public boolean equals(Object obj) {
+	    if (!(obj.getClass()==this.getClass())) {
+	        return false;
+	    }
+	    ActaNotasImpl otra=(ActaNotasImpl) obj;
+	    return (this.asignatura.equals(otra.asignatura) &&this.año==otra.año && this.julio==otra.julio);
+	}
+	
+	@Override
+	public String toString() {
+		String devolver="ActaNotas(" + "asignatura=" + this.asignatura + ", año=" + this.año + ", convocatoria=";
+		if(julio) {
+			devolver+= "estraordinaria)";
+		}else {
+			devolver+= "ordinaria)";
+		}
+	    return devolver;
+		}
 
     public IndexedList<Pair<String, Integer>> alumnosPorGrupo(){
         //hacer
